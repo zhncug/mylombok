@@ -1,0 +1,12 @@
+bin
+.classpath
+.project
+.settings
+.vscode
+.gradle
+.idea
+*.pyc
+build
+out
+classes
+*.iml
