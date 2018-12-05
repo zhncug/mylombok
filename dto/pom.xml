@@ -31,7 +31,7 @@
                     <encoding>UTF-8</encoding>
                     <annotationProcessors>
                         <annotationProcessor>
-                            com.zhn.annoation.IpCompileProcessor
+                            com.zhn.annoation.IpProcessor
                         </annotationProcessor>
 
                     </annotationProcessors>
