@@ -4,6 +4,7 @@ package com.zhn.annoation;
  * Created by nan.zhang on 18-2-11.
  */
 
+import com.google.auto.service.AutoService;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeName;
@@ -25,6 +26,7 @@ import java.util.Set;
 @SupportedAnnotationTypes({
         "com.zhn.annoation.IpInfo"
 })
+@AutoService(value = Processor.class)
 public class IpProcessor extends AbstractProcessor {
 
     private Filer filer;
