@@ -51,7 +51,7 @@ public class BuildProcessor extends AbstractProcessor {
 
                         if (null != id) {
                             ps.println("     <id name=\"" + f.getSimpleName() + "\" column=\"" + id.column()
-                                    + "\" type=\"" + id.type() + "\">");
+                                    + "\" type=\"" + id.type() + "\"/>");
                         }
                         Property p = f.getAnnotation(Property.class);
 
@@ -60,9 +60,9 @@ public class BuildProcessor extends AbstractProcessor {
                                     + "\" column=\"" + p.column() + "\" type=\"" + p.type() + "\"/>");
                         }
                     }
-                    ps.println("    </class>");
-                    ps.println("</hibernate-mapping>");
                 }
+                ps.println("    </class>");
+                ps.println("</hibernate-mapping>");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
