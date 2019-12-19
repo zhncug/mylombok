@@ -5,10 +5,7 @@ package com.zhn.processor;
  */
 
 import com.google.auto.service.AutoService;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 import com.zhn.annoation.IpInfoBuilder;
 
 import javax.annotation.processing.*;
@@ -22,6 +19,7 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
+ * 生成类、方法、属性
  * Created by nan.zhang on 18-2-8.
  */
 @SupportedAnnotationTypes({
@@ -56,17 +54,23 @@ public class IpProcessor extends AbstractProcessor {
             }
 
             TypeElement typeElement = (TypeElement) element;
-            String className = typeElement.getSimpleName().toString()+"Test";
+            String className = typeElement.getSimpleName().toString() + "Dto";
             String packageName = elements.getPackageOf(typeElement).getQualifiedName().toString();
 
             FieldSpec isIpv6Field = FieldSpec.builder(TypeName.BOOLEAN, "isIpv6", Modifier.PUBLIC).build();
             FieldSpec hostIp = FieldSpec.builder(TypeName.LONG, "hostIp", Modifier.PUBLIC).build();
+            MethodSpec isIpv6Method = MethodSpec.methodBuilder("getIpv6")
+                    .returns(TypeName.BOOLEAN)
+                    .addStatement("return isIpv6")
+                    .addModifiers(Modifier.PUBLIC)
+                    .build();
 
             TypeSpec navigatorClass = TypeSpec
                     .classBuilder(className)
-                    .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                    .addModifiers(Modifier.PUBLIC)
                     .addField(isIpv6Field)
                     .addField(hostIp)
+                    .addMethod(isIpv6Method)
                     .build();
             /**
              * 3- Write generated class to a file

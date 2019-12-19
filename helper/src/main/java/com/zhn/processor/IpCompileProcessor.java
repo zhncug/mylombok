@@ -5,6 +5,7 @@ import com.sun.source.tree.Tree;
 import com.sun.tools.javac.api.JavacTrees;
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Type;
+import com.sun.tools.javac.code.TypeTag;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
@@ -20,7 +21,7 @@ import java.util.Set;
  * Created by nan.zhang on 18-2-11.
  */
 @SupportedAnnotationTypes({
-        "com.zhn.annoation.IpInfoBuilder"
+        "com.zhn.annoation.SetterGetter"
 })
 @AutoService(value = Processor.class)
 public class IpCompileProcessor extends AbstractProcessor {
@@ -45,17 +46,22 @@ public class IpCompileProcessor extends AbstractProcessor {
                 .stream()
                 .map(element -> trees.getTree(element))
                 .forEach(t -> t.accept(new TreeTranslator() {
-            @Override
-            public void visitClassDef(JCTree.JCClassDecl jcClassDecl) {
-                jcClassDecl.defs.stream().filter(k -> k.getKind().equals(Tree.Kind.VARIABLE)).map(tree -> (JCTree.JCVariableDecl) tree).forEach(jcVariableDecl -> {
-                    //添加get方法
-                    jcClassDecl.defs = jcClassDecl.defs.prepend(makeGetterMethodDecl(jcVariableDecl));
-                    //添加set方法
-                    jcClassDecl.defs = jcClassDecl.defs.prepend(makeSetterMethodDecl(jcVariableDecl));
-                });
-                super.visitClassDef(jcClassDecl);
-            }
-        }));
+                    @Override
+                    public void visitClassDef(JCTree.JCClassDecl jcClassDecl) {
+                        jcClassDecl.defs = jcClassDecl.defs.prepend(makeVariable());
+                        super.visitClassDef(jcClassDecl);
+                        jcClassDecl.defs.stream()
+                                .filter(k -> k.getKind().equals(Tree.Kind.VARIABLE))
+                                .map(tree -> (JCTree.JCVariableDecl) tree).forEach(jcVariableDecl -> {
+                            //添加get方法
+                            jcClassDecl.defs = jcClassDecl.defs.prepend(makeGetterMethodDecl(jcVariableDecl));
+                            //添加set方法
+                            jcClassDecl.defs = jcClassDecl.defs.prepend(makeSetterMethodDecl(jcVariableDecl));
+                        });
+
+                        super.visitClassDef(jcClassDecl);
+                    }
+                }));
         return true;
     }
 
@@ -115,6 +121,17 @@ public class IpCompileProcessor extends AbstractProcessor {
         }
         return null;
 
+    }
+
+    private JCTree.JCVariableDecl makeVariable() {
+        //方法的访问级别
+        JCTree.JCModifiers modifiers = treeMaker.Modifiers(Flags.PUBLIC);
+        //方法名称
+        Name fieldName = names.fromString("ip");
+        //设置返回值类型
+        JCTree.JCExpression returnMethodType = treeMaker.TypeIdent(TypeTag.LONG);
+
+        return treeMaker.VarDef(modifiers, fieldName, returnMethodType, null);
     }
 
     private Name getMethodName(Name name) {
